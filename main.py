@@ -3,8 +3,10 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from agents.planner import planner_agent
 from agents.research_agent import research_agent
-import asyncio
 from agents.summarizer_agent import summarizer_agent
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # ✅ Match ADK expected structure
@@ -68,40 +70,48 @@ async def run():
 
     results = []
 
-    # 🔍 Step 3: Research each task
+    # 🔍 Step 3: Research each task (with rate-limit protection)
     print("\n--- RESEARCH ---")
 
-    for task in tasks:
+    for i, task in enumerate(tasks):
         task = task.strip()
 
         if not task:
             continue
 
-        print(f"\nTask: {task}")
+        print(f"\nTask {i+1}: {task}")
 
-        result = await run_agent(research_agent, task, session_service)
+        try:
+            result = await run_agent(research_agent, task, session_service)
+            print(f"Result: {result}")
 
-        print(f"Result: {result}")
+            if result:
+                results.append(result)
 
-        if result:
-            results.append(result)
-        await asyncio.sleep(12)
+        except Exception as e:
+            print(f"⚠️ Error on task {i+1}: {e}")
+
+        # ✅ Rate limit protection
+        print("⏳ Waiting to avoid rate limits...")
+        await asyncio.sleep(10)
 
     # 🧾 Step 4: Combine results
-    print("\n--- FINAL ANSWER ---")
+    print("\n--- SUMMARIZING ---")
 
     combined_text = "\n".join(results)
 
-    print("\n--- SUMMARIZING ---")
+    try:
+        final_answer = await run_agent(
+            summarizer_agent,
+            combined_text,
+            session_service
+        )
 
-    final_answer = await run_agent(
-        summarizer_agent,
-        combined_text,
-        session_service
-    )
+        print("\n--- FINAL ANSWER ---")
+        print(final_answer)
 
-    print("\n--- FINAL ANSWER ---")
-    print(final_answer)
+    except Exception as e:
+        print(f"⚠️ Error during summarization: {e}")
 
 
 if __name__ == "__main__":
