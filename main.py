@@ -93,7 +93,7 @@ async def run():
 
         # ✅ Rate limit protection
         print("⏳ Waiting to avoid rate limits...")
-        await asyncio.sleep(10)
+        await asyncio.sleep(2)
 
     # 🧾 Step 4: Combine results
     print("\n--- SUMMARIZING ---")

@@ -177,15 +177,19 @@ Multi-agent architecture may hit quota limits
 
 Tool responses may sometimes be partial
 
-🔮 Future Improvements
+## 🌐 API Endpoints
 
-Optimize API calls (reduce multi-step calls)
+### 🔍 POST /research
+Full multi-agent pipeline (may hit API limits)
 
-Add retry/backoff handling
+### ⚡ POST /research-lite
+Fast single-call version with fallback support
 
-Improve tool integration (real data sources)
+### ❤️ GET /health
+Check if API is running
 
-Add UI (Streamlit / FastAPI)
+---
 
-Support multiple connectors (Box, Monday, etc.)
- f67f8b9 (Added README and improved project documentation)
+## 🧪 API Testing
+
+Tested using Postman for real-world API interaction.
